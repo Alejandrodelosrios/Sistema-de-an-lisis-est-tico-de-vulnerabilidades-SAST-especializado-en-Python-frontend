@@ -16,9 +16,9 @@ export const metadata: Metadata = {
   title: "PyGuardian",
   description: "PyGuardian es una herramienta de análisis estático de vulnerabilidades diseñada para estudiantes. Detecta vulnerabilidades en tu código Python y te enseña a resolverlas con explicaciones paso a paso.",
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/shield-icon.svg",
+    shortcut: "/shield-icon.svg",
+    apple: "/shield-icon.svg",
   },
 };
 

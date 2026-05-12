@@ -6,26 +6,25 @@ import { ProjectList } from '@/components/project/ProjectList';
 import { ProjectForm } from '@/components/project/ProjectForm';
 import { UserProfile } from '@/components/auth/UserProfile';
 
-interface Project {
-  id: number;
-  name: string;
-  language: string;
-  date: string;
-  issues: number;
-}
-
 export default function DashboardPage() {
-  const [view, setView] = useState<'dashboard' | 'profile' | 'create-project'>('dashboard');
-
-  // Datos simulados de proyectos (los datos del usuario ahora se obtienen desde la API en UserProfile)
-  const myProjects: Project[] = [
-    { id: 1, name: "Sistema_Ventas_API", language: "Python 3.10", issues: 5, date: "12/05/2026" },
-    { id: 2, name: "Data_Analyzer_Bot", language: "Python 3.9", issues: 0, date: "10/05/2026" },
-    { id: 3, name: "Auth_Module_Py", language: "Python 3.11", issues: 2, date: "08/05/2026" },
-  ];
+  const [view, setView] = useState<'dashboard' | 'profile' | 'create-project' | 'edit-project'>('dashboard');
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
 
   const handleNavigate = (newView: string) => {
-    setView(newView as 'dashboard' | 'profile' | 'create-project');
+    setView(newView as 'dashboard' | 'profile' | 'create-project' | 'edit-project');
+  };
+
+  const handleEditProject = (id: number) => {
+    setEditingProjectId(id);
+    setView('edit-project');
+  };
+
+  const handleProjectSuccess = () => {
+    // Forzar recarga de ProjectList
+    setRefreshKey(prev => prev + 1);
+    setView('dashboard');
+    setEditingProjectId(null);
   };
 
   return (
@@ -39,8 +38,9 @@ export default function DashboardPage() {
         {/* DASHBOARD VIEW */}
         {view === 'dashboard' && (
           <ProjectList 
-            projects={myProjects} 
+            key={refreshKey}
             onCreateProject={() => handleNavigate('create-project')}
+            onEdit={handleEditProject}
           />
         )}
 
@@ -53,7 +53,22 @@ export default function DashboardPage() {
 
         {/* CREATE PROJECT VIEW */}
         {view === 'create-project' && (
-          <ProjectForm onCancel={() => handleNavigate('dashboard')} />
+          <ProjectForm 
+            onCancel={() => handleNavigate('dashboard')}
+            onSuccess={handleProjectSuccess}
+          />
+        )}
+
+        {/* EDIT PROJECT VIEW */}
+        {view === 'edit-project' && editingProjectId && (
+          <ProjectForm 
+            projectId={editingProjectId}
+            onCancel={() => {
+              setEditingProjectId(null);
+              handleNavigate('dashboard');
+            }}
+            onSuccess={handleProjectSuccess}
+          />
         )}
 
       </main>

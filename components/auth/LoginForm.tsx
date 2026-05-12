@@ -144,9 +144,10 @@ export default function LoginForm() {
             Recuérdame
           </span>
         </label>
-        <Link href="#" className="font-mono text-emerald-400 hover:text-emerald-300 transition-colors">
+        {/* TODO: Implementar recuperación de contraseña */}
+        {/* <Link href="#" className="font-mono text-emerald-400 hover:text-emerald-300 transition-colors">
           ¿Olvidó contraseña?
-        </Link>
+        </Link> */}
       </div>
 
       {/* Submit Button */}
