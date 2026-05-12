@@ -36,10 +36,11 @@ export default function RegisterForm() {
     e.preventDefault();
     setError("");
 
-    if (!agreeTerms) {
-      setError("Debes aceptar los términos y condiciones");
-      return;
-    }
+    // TODO: Validar agreeTerms cuando esté habilitado
+    // if (!agreeTerms) {
+    //   setError("Debes aceptar los términos y condiciones");
+    //   return;
+    // }
 
     if (!isPasswordValid) {
       setError("La contraseña no cumple con los requisitos");
@@ -227,6 +228,7 @@ export default function RegisterForm() {
       )}
 
       {/* Terms */}
+      {/* TODO: Habilitar cuando se defina política de términos y privacidad
       <label className="flex items-start gap-3 cursor-pointer group">
         <input
           type="checkbox"
@@ -244,12 +246,12 @@ export default function RegisterForm() {
             política de privacidad
           </Link>
         </span>
-      </label>
+      </label> */}
 
       {/* Submit Button */}
       <Button
         type="submit"
-        disabled={loading || !agreeTerms || !isPasswordValid || !passwordsMatch}
+        disabled={loading || !isPasswordValid || !passwordsMatch}
         className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-sm py-2.5 h-auto disabled:opacity-50"
       >
         {loading ? "Registrando..." : "Crear cuenta"}

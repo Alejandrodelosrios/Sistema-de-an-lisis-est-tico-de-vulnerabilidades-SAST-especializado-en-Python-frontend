@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#047857;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background with gradient -->
+  <rect width="200" height="200" rx="30" fill="url(#shieldGradient)"/>
+  
+  <!-- Shield icon (white) -->
+  <path d="M100 20 L160 50 L160 110 C160 150 100 180 100 180 C100 180 40 150 40 110 L40 50 Z" 
+        fill="none" 
+        stroke="white" 
+        stroke-width="8" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <!-- Shield fill -->
+  <path d="M100 30 L155 58 L155 110 C155 145 100 172 100 172 C100 172 45 145 45 110 L45 58 Z" 
+        fill="white" 
+        opacity="0.9"/>
+</svg>
