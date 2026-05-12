@@ -18,6 +18,11 @@ export default function LoginForm() {
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
+
+  interface AuthResponse {
+  access_token: string;
+  refresh_token: string;
+}
   // Cargar correo guardado en localStorage al montar el componente
   useEffect(() => {
     const savedCorreo = localStorage.getItem("rememberedEmail");
@@ -43,7 +48,7 @@ export default function LoginForm() {
     try {
 
       // Aquí irá la lógica de autenticación
-      const response = await api.post("/auth/login", {
+      const response = await api.post<AuthResponse>("/auth/login", {
           correo: correo, 
           password:password, 
       });
