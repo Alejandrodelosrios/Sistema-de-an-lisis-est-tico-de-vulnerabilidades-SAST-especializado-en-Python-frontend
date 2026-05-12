@@ -61,7 +61,7 @@ export default function LoginForm() {
       router.push("/dashboard");
 
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
+      if (isAxiosError(err)) {
        const detail = err.response?.data?.detail;
        if(typeof detail==="string"){
         setError(detail);
