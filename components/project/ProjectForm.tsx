@@ -27,7 +27,7 @@ export const ProjectForm = ({ onCancel, onSuccess, projectId, initialData }: Pro
     if (isEditing && projectId) {
       const fetchProyecto = async () => {
         try {
-          const response = await api.get(`/proyectos/${projectId}/`);
+          const response = await api.get(`/proyectos/${projectId}`);
           const proyecto = response.data;
           
           setNombre(proyecto.nombre);
@@ -87,34 +87,53 @@ export const ProjectForm = ({ onCancel, onSuccess, projectId, initialData }: Pro
     setLoading(true);
 
     try {
-      // Construir payload JSON
-      const payload: any = {
-        nombre: nombre.trim(),
-        origen: origen,
-      };
-
-      // Solo agregar url_github si es github
-      if (origen === 'github') {
-        payload.url_github = urlGithub.trim();
-      }
-
-      console.log('Enviando payload:', payload);
-
       let respuesta: any;
+      
       if (isEditing) {
-        // PUT para actualizar
-        respuesta = await api.put(`/proyectos/${projectId}/`, payload);
+        const formData = new FormData();
+        formData.append('nombre', nombre.trim());
+
+        if (origen === 'github' && urlGithub.trim()) {
+          formData.append('url_github', urlGithub.trim());
+        }
+
+        if (origen === 'carga_directa' && archivos.length > 0) {
+          archivos.forEach((archivo) => {
+            formData.append('files', archivo);
+          });
+        }
+
+        respuesta = await api.put(`/proyectos/${projectId}/`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
       } else {
-        // POST para crear
-        respuesta = await api.post('/proyectos/', payload);
+        // POST para crear (FormData)
+        const formData = new FormData();
+        formData.append('nombre', nombre.trim());
+        formData.append('origen', origen);
+
+        if (origen === 'github') {
+          formData.append('url_github', urlGithub.trim());
+        }
+
+        if (origen === 'carga_directa') {
+          archivos.forEach((archivo) => {
+            formData.append('files', archivo);
+          });
+        }
+
+        respuesta = await api.post('/proyectos/', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
       }
 
       console.log('Respuesta del servidor:', respuesta.data);
 
       if (onSuccess) onSuccess(respuesta.data);
+      setArchivos([]);
       if (onCancel) onCancel();
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message || 'Error al procesar el proyecto';
+      const errorMessage = err.response?.data?.detail || err.response?.data?.message || 'Error al procesar el proyecto';
       setError(errorMessage);
       console.error('Error:', err);
     } finally {
@@ -173,12 +192,18 @@ export const ProjectForm = ({ onCancel, onSuccess, projectId, initialData }: Pro
               </label>
               <select 
                 value={origen}
-                onChange={(e) => setOrigen(e.target.value as 'github' | 'carga_directa')}
-                className="w-full bg-slate-900 border border-white/10 rounded-xl px-5 py-3 focus:outline-none focus:border-emerald-500/50 transition-colors text-white"
+                onChange={(e) => !isEditing && setOrigen(e.target.value as 'github' | 'carga_directa')}
+                disabled={isEditing}
+                className={`w-full bg-slate-900 border border-white/10 rounded-xl px-5 py-3 focus:outline-none focus:border-emerald-500/50 transition-colors text-white ${isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <option value="github">GitHub</option>
                 <option value="carga_directa">Carga Directa</option>
               </select>
+              {isEditing && (
+                <p className="text-xs text-slate-500 mt-1 ml-1">
+                  El origen no se puede cambiar después de crear el proyecto.
+                </p>
+              )}
             </div>
 
             {/* Carga de Archivos - Solo si es Carga Directa */}
