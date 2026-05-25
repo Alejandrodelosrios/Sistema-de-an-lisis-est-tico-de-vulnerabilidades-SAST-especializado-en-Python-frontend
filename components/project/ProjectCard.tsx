@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Folder, 
   Upload, 
@@ -100,6 +101,7 @@ const DeleteConfirmationModal = ({
 
 export const ProjectCard = ({ proyecto, onEdit, onDelete }: ProjectCardProps) => {
   const isGithub = proyecto.origen === 'github';
+  const router = useRouter();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -160,10 +162,15 @@ export const ProjectCard = ({ proyecto, onEdit, onDelete }: ProjectCardProps) =>
       {/* Botones de Acción */}
       <div className="flex items-center gap-2 pt-2 border-t border-white/5">
         <button 
+          onClick={() => router.push(`/project/${proyecto.id}`)}
+          className="flex-1 flex items-center justify-center gap-2 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg text-emerald-400 text-xs font-semibold transition-all border border-emerald-500/20">
+          Ver detalle →
+        </button>
+        <button 
           onClick={() => onEdit(proyecto.id)}
-          className="flex-1 flex items-center justify-center gap-2 py-2 bg-slate-800/50 hover:bg-slate-700 rounded-lg text-slate-300 hover:text-white text-xs font-semibold transition-all"
+          className="px-3 py-2 bg-slate-800/50 hover:bg-slate-700 rounded-lg text-slate-300 transition-all"
         >
-          <Edit3 className="w-3.5 h-3.5" /> Editar
+          <Edit3 className="w-3.5 h-3.5" />
         </button>
         <button 
           onClick={() => setShowDeleteModal(true)}

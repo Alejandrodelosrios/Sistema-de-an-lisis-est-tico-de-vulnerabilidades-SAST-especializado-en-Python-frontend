@@ -1,15 +1,26 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { Navbar } from '@/components/dashboard/Navbar';
 import { ProjectList } from '@/components/project/ProjectList';
 import { ProjectForm } from '@/components/project/ProjectForm';
 import { UserProfile } from '@/components/auth/UserProfile';
 
-export default function DashboardPage() {
+function DashboardContent() {
   const [view, setView] = useState<'dashboard' | 'profile' | 'create-project' | 'edit-project'>('dashboard');
   const [refreshKey, setRefreshKey] = useState(0);
   const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const editId = searchParams.get('edit');
+    if (editId) {
+      setEditingProjectId(Number(editId));
+      setView('edit-project');
+    }
+  }, [searchParams]);
 
   const handleNavigate = (newView: string) => {
     setView(newView as 'dashboard' | 'profile' | 'create-project' | 'edit-project');
@@ -73,5 +84,13 @@ export default function DashboardPage() {
 
       </main>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={null}>
+      <DashboardContent />
+    </Suspense>
   );
 }
