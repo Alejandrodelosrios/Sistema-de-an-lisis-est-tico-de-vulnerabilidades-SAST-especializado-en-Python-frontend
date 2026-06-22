@@ -203,16 +203,37 @@ export default function ResultadoAnalisisPage() {
                       </div>
                     )}
 
-                    {/* Placeholder Sprint 3 */}
-                    <div className="bg-blue-950 border border-blue-900 rounded-lg px-4 py-3">
-                      <p className="text-xs font-semibold text-blue-400 uppercase tracking-wide mb-1">
-                        💡 Retroalimentación pedagógica
-                      </p>
-                      <p className="text-sm text-blue-300 italic">
-                        La explicación del riesgo y el ejemplo de código corregido
-                        estarán disponibles en la próxima versión.
-                      </p>
-                    </div>
+                    {/* Retroalimentación pedagógica */}
+                    {vuln.recomendaciones && vuln.recomendaciones.length > 0 ? (
+                      <div className="space-y-4">
+                        <div className="bg-blue-950 border border-blue-900 rounded-lg px-4 py-3">
+                          <p className="text-xs font-semibold text-blue-400 uppercase tracking-wide mb-1">
+                            💡 {vuln.recomendaciones[0].titulo}
+                          </p>
+                          <p className="text-sm text-blue-200 leading-relaxed">
+                            {vuln.recomendaciones[0].explicacion_riesgo}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+                            ✅ Código corregido sugerido
+                          </p>
+                          <pre className="bg-green-950 border border-green-900 rounded-lg px-4 py-3 text-sm font-mono text-green-400 overflow-x-auto whitespace-pre-wrap">
+                            {vuln.recomendaciones[0].codigo_corregido_ejemplo}
+                          </pre>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-blue-950 border border-blue-900 rounded-lg px-4 py-3">
+                        <p className="text-xs font-semibold text-blue-400 uppercase tracking-wide mb-1">
+                          💡 Retroalimentación pedagógica
+                        </p>
+                        <p className="text-sm text-blue-300 italic">
+                          No hay recomendación disponible para esta vulnerabilidad.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

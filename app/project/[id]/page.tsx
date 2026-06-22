@@ -216,8 +216,13 @@ export default function DetalleProyectoPage() {
       {/* Historial de análisis */}
       {analisis.length > 0 && (
         <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-700">
+          <div className="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
             <h2 className="font-semibold text-slate-200">Historial de análisis</h2>
+            <button
+              onClick={() => router.push(`/project/${proyectoId}/history`)}
+              className="text-sm text-blue-400 hover:underline">
+              Ver evolución →
+            </button>
           </div>
           <ul className="divide-y divide-slate-700">
             {analisis.map((a, index) => (
