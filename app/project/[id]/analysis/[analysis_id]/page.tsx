@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getAnalisis, listarAnalisis, Analysis, Vulnerability } from '@/services/analysisService';
+import { getAnalisis, listarAnalisis, descargarReportePDF, Analysis, Vulnerability } from '@/services/analysisService';
 
 const SEVERIDAD_CONFIG = {
   critica: { label: 'Crítica', badge: 'bg-red-100 text-red-700 border-red-200', dot: 'bg-red-500' },
@@ -21,6 +21,7 @@ export default function ResultadoAnalisisPage() {
   const [expandida, setExpandida] = useState<number | null>(null);
   const [filtro, setFiltro] = useState<string>('todas');
   const [loading, setLoading] = useState(true);
+  const [descargando, setDescargando] = useState(false);
 
   useEffect(() => {
     getAnalisis(proyectoId, analisisId)
@@ -36,6 +37,25 @@ export default function ResultadoAnalisisPage() {
   );
 
   if (!analisis) return null;
+
+  async function handleDescargarReporte() {
+    setDescargando(true);
+    try {
+      const blob = await descargarReportePDF(proyectoId, analisisId);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `reporte_analisis_${analisisId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert('No se pudo generar el reporte PDF. Intenta nuevamente.');
+    } finally {
+      setDescargando(false);
+    }
+  }
 
   const vulns = analisis.vulnerabilidades || [];
   const conteos = {
@@ -93,6 +113,12 @@ export default function ResultadoAnalisisPage() {
             <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full mt-2 inline-block ${label.cls}`}>
               {label.text}
             </span>
+            <button
+              onClick={handleDescargarReporte}
+              disabled={descargando}
+              className="mt-3 w-full text-xs font-medium px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white transition-colors flex items-center justify-center gap-1.5">
+              {descargando ? 'Generando...' : '📄 Exportar PDF'}
+            </button>
           </div>
         </div>
       </div>
@@ -203,16 +229,37 @@ export default function ResultadoAnalisisPage() {
                       </div>
                     )}
 
-                    {/* Placeholder Sprint 3 */}
-                    <div className="bg-blue-950 border border-blue-900 rounded-lg px-4 py-3">
-                      <p className="text-xs font-semibold text-blue-400 uppercase tracking-wide mb-1">
-                        💡 Retroalimentación pedagógica
-                      </p>
-                      <p className="text-sm text-blue-300 italic">
-                        La explicación del riesgo y el ejemplo de código corregido
-                        estarán disponibles en la próxima versión.
-                      </p>
-                    </div>
+                    {/* Retroalimentación pedagógica */}
+                    {vuln.recomendaciones && vuln.recomendaciones.length > 0 ? (
+                      <div className="space-y-4">
+                        <div className="bg-blue-950 border border-blue-900 rounded-lg px-4 py-3">
+                          <p className="text-xs font-semibold text-blue-400 uppercase tracking-wide mb-1">
+                            💡 {vuln.recomendaciones[0].titulo}
+                          </p>
+                          <p className="text-sm text-blue-200 leading-relaxed">
+                            {vuln.recomendaciones[0].explicacion_riesgo}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+                            ✅ Código corregido sugerido
+                          </p>
+                          <pre className="bg-green-950 border border-green-900 rounded-lg px-4 py-3 text-sm font-mono text-green-400 overflow-x-auto whitespace-pre-wrap">
+                            {vuln.recomendaciones[0].codigo_corregido_ejemplo}
+                          </pre>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-blue-950 border border-blue-900 rounded-lg px-4 py-3">
+                        <p className="text-xs font-semibold text-blue-400 uppercase tracking-wide mb-1">
+                          💡 Retroalimentación pedagógica
+                        </p>
+                        <p className="text-sm text-blue-300 italic">
+                          No hay recomendación disponible para esta vulnerabilidad.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

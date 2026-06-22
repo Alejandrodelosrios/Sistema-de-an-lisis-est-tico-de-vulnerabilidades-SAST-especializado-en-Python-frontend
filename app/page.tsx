@@ -25,9 +25,9 @@ export default function WelcomePage() {
         </div>
         {/* revisar si poner estas cosas */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
-          <a href="#" className="hover:text-emerald-400 transition-colors">Metodología</a>
-          <a href="#" className="hover:text-emerald-400 transition-colors">Vulnerabilidades</a>
-          <a href="#" className="hover:text-emerald-400 transition-colors">Docs</a>
+          <a href="#caracteristicas" className="hover:text-emerald-400 transition-colors">Caracteristicas</a>
+          <a href="#tecnologias" className="hover:text-emerald-400 transition-colors">Tecnologias</a>
+          <a href="#acerca" className="hover:text-emerald-400 transition-colors">Acerca del proyecto</a>
         </div>
         <div className="flex items-center gap-3">
           <Link href="/login">
@@ -81,6 +81,53 @@ export default function WelcomePage() {
           </Link>
         </div>
       </section>
+      
+      <section
+  id="caracteristicas"
+  className="relative z-10 max-w-5xl mx-auto px-8 py-20"
+>
+  <h2 className="font-mono text-3xl font-bold text-center mb-12">
+    Características
+  </h2>
+
+  <div className="grid md:grid-cols-2 gap-6">
+    <div className="p-6 rounded-xl border border-white/10">
+      <h3 className="font-mono text-emerald-400 mb-2">
+        Análisis estático especializado en Python
+      </h3>
+      <p className="text-slate-400 text-sm">
+        Detecta patrones inseguros en código Python sin ejecutar la aplicación.
+      </p>
+    </div>
+
+    <div className="p-6 rounded-xl border border-white/10">
+      <h3 className="font-mono text-emerald-400 mb-2">
+        Vulnerabilidades OWASP
+      </h3>
+      <p className="text-slate-400 text-sm">
+        Identifica vulnerabilidades alineadas con las categorías del OWASP Top 10.
+      </p>
+    </div>
+
+    <div className="p-6 rounded-xl border border-white/10">
+      <h3 className="font-mono text-emerald-400 mb-2">
+        Retroalimentación pedagógica
+      </h3>
+      <p className="text-slate-400 text-sm">
+        Cada hallazgo incluye una explicación del riesgo y una solución sugerida.
+      </p>
+    </div>
+
+    <div className="p-6 rounded-xl border border-white/10">
+      <h3 className="font-mono text-emerald-400 mb-2">
+        Reportes PDF
+      </h3>
+      <p className="text-slate-400 text-sm">
+        Exporta los resultados del análisis para documentación y seguimiento.
+      </p>
+    </div>
+  </div>
+</section>
 
       {/* Code preview */}
       <section className="relative z-10 flex justify-center px-6 pb-16">
@@ -165,7 +212,49 @@ export default function WelcomePage() {
           </div>
         ))}
       </section>
+      <section
+  id="tecnologias"
+  className="relative z-10 max-w-5xl mx-auto px-8 py-20"
+>
+  <h2 className="font-mono text-3xl font-bold text-center mb-12">
+    Tecnologías
+  </h2>
 
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    {[
+      "Next.js",
+      "FastAPI",
+      "PostgreSQL",
+      "TypeScript",
+      "Tailwind CSS",
+      "GitHub"
+    ].map((tech) => (
+      <div
+        key={tech}
+        className="rounded-xl border border-white/10 p-5 text-center font-mono"
+      >
+        {tech}
+      </div>
+    ))}
+  </div>
+</section>
+
+<section
+  id="acerca"
+  className="relative z-10 max-w-4xl mx-auto px-8 py-20 text-center"
+>
+  <h2 className="font-mono text-3xl font-bold mb-8">
+    Acerca del proyecto
+  </h2>
+
+  <p className="text-slate-400 leading-relaxed">
+    PyGuardian es una herramienta educativa de análisis estático de
+    vulnerabilidades especializada en Python. Su objetivo es ayudar a
+    estudiantes a identificar vulnerabilidades de seguridad, comprender
+    sus riesgos y aprender buenas prácticas mediante retroalimentación
+    pedagógica y ejemplos de corrección.
+  </p>
+</section>
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/5 px-8 py-6 flex items-center justify-between">
         <span className="font-mono text-white/20 text-xs">PyGuardian © 2026</span>
