@@ -98,3 +98,11 @@ export async function getProjectHistory(proyectoId: number): Promise<AnalysisHis
   if (!res.ok) throw new Error('Error al obtener el historial del proyecto');
   return res.json();
 }
+
+export async function descargarReportePDF(proyectoId: number, analisisId: number): Promise<Blob> {
+  const res = await fetch(`${API_URL}/proyectos/${proyectoId}/analisis/${analisisId}/reporte`, {
+    headers: getHeaders(),
+  });
+  if (!res.ok) throw new Error('Error al generar el reporte PDF');
+  return res.blob();
+}

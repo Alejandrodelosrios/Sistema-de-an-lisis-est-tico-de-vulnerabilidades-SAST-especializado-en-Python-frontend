@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getAnalisis, listarAnalisis, Analysis, Vulnerability } from '@/services/analysisService';
+import { getAnalisis, listarAnalisis, descargarReportePDF, Analysis, Vulnerability } from '@/services/analysisService';
 
 const SEVERIDAD_CONFIG = {
   critica: { label: 'Crítica', badge: 'bg-red-100 text-red-700 border-red-200', dot: 'bg-red-500' },
@@ -21,6 +21,7 @@ export default function ResultadoAnalisisPage() {
   const [expandida, setExpandida] = useState<number | null>(null);
   const [filtro, setFiltro] = useState<string>('todas');
   const [loading, setLoading] = useState(true);
+  const [descargando, setDescargando] = useState(false);
 
   useEffect(() => {
     getAnalisis(proyectoId, analisisId)
@@ -36,6 +37,25 @@ export default function ResultadoAnalisisPage() {
   );
 
   if (!analisis) return null;
+
+  async function handleDescargarReporte() {
+    setDescargando(true);
+    try {
+      const blob = await descargarReportePDF(proyectoId, analisisId);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `reporte_analisis_${analisisId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert('No se pudo generar el reporte PDF. Intenta nuevamente.');
+    } finally {
+      setDescargando(false);
+    }
+  }
 
   const vulns = analisis.vulnerabilidades || [];
   const conteos = {
@@ -93,6 +113,12 @@ export default function ResultadoAnalisisPage() {
             <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full mt-2 inline-block ${label.cls}`}>
               {label.text}
             </span>
+            <button
+              onClick={handleDescargarReporte}
+              disabled={descargando}
+              className="mt-3 w-full text-xs font-medium px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white transition-colors flex items-center justify-center gap-1.5">
+              {descargando ? 'Generando...' : '📄 Exportar PDF'}
+            </button>
           </div>
         </div>
       </div>
