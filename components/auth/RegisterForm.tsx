@@ -26,7 +26,7 @@ export default function RegisterForm() {
     hasUppercase: /[A-Z]/.test(password),
     hasLowercase: /[a-z]/.test(password),
     hasNumber: /\d/.test(password),
-    hasSpecial: /[!@#$%^&*]/.test(password),
+    hasSpecial: /[!@#$%^&*.]/.test(password),
   };
 
   const isPasswordValid = Object.values(passwordValidations).every(Boolean);
@@ -164,7 +164,7 @@ export default function RegisterForm() {
               { key: "hasUppercase", label: "Una mayúscula" },
               { key: "hasLowercase", label: "Una minúscula" },
               { key: "hasNumber", label: "Un número" },
-              { key: "hasSpecial", label: "Un carácter especial (!@#$%^&*)" },
+              { key: "hasSpecial", label: "Un carácter especial (!@#$%^&*.)" },
             ].map(({ key, label }) => (
               <div key={key} className="flex items-center gap-2">
                 {passwordValidations[key as keyof typeof passwordValidations] ? (

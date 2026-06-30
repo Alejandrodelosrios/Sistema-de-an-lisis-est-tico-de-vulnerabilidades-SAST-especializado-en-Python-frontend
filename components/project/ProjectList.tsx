@@ -113,7 +113,7 @@ export const ProjectList = ({ proyectos: initialProyectos = [], onCreateProject,
   // Manejar eliminación desde ProjectCard
   const handleDelete = async (id: number) => {
     try {
-      await api.delete(`/proyectos/${id}/`);
+      await api.delete(`/proyectos/${id}`);
       setProyectos(proyectos.filter(p => p.id !== id));
       if (onRefresh) onRefresh();
     } catch (err) {

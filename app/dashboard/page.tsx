@@ -39,7 +39,7 @@ function DashboardContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-slate-200 font-sans">
+    <div className="min-h-screen bg-[#0f172a] text-slate-200 font-sans relative">
       {/* Navbar Component */}
       <Navbar onNavigate={handleNavigate} currentView={view} />
 
@@ -55,7 +55,7 @@ function DashboardContent() {
           />
         )}
 
-        {/* USER PROFILE VIEW - Obtiene datos de API internamente */}
+        {/* USER PROFILE VIEW */}
         {view === 'profile' && (
           <UserProfile 
             onBack={() => handleNavigate('dashboard')}

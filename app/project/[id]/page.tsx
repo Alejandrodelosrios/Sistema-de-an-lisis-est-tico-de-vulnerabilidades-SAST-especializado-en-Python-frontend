@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import api from '@/lib/api';
-import { Archivo,listarArchivos,eliminarArchivo  } from '@/services/fileService';
+import { Archivo, listarArchivos, eliminarArchivo } from '@/services/fileService';
 import { Analysis, ejecutarAnalisis, listarAnalisis } from '@/services/analysisService';
+import { FeedbackBubble } from '@/components/feedback/FeedbackBubble';
 
 interface Proyecto {
   id: number;
@@ -17,7 +18,7 @@ interface Proyecto {
 export default function DetalleProyectoPage() {
   const { id } = useParams();
   const router = useRouter();
-  const proyectoId = Number(id);
+  const proyectoId = Number(id); // 👈 Ya tienes el ID mapeado aquí como número
 
   const [proyecto, setProyecto] = useState<Proyecto | null>(null);
   const [archivos, setArchivos] = useState<Archivo[]>([]);
@@ -249,6 +250,9 @@ export default function DetalleProyectoPage() {
           </ul>
         </div>
       )}
+
+      {/* Componente Flotante de Feedback alimentado con el proyectoId */}
+      <FeedbackBubble proyectoId={proyectoId} /> 
     </div>
   );
 }

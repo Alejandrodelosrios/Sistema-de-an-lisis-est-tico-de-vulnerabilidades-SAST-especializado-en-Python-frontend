@@ -52,19 +52,6 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-white/5 px-6 sm:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-mono text-white/30">
-        <span>© 2026 PyGuardian.</span>
-        <div className="flex gap-4">
-          <Link href="#" className="hover:text-white/60 transition-colors">
-            Privacidad
-          </Link>
-          <Link href="#" className="hover:text-white/60 transition-colors">
-            Términos
-          </Link>
-        </div>
-      </footer>
     </main>
   );
 }

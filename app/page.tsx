@@ -255,10 +255,6 @@ export default function WelcomePage() {
     pedagógica y ejemplos de corrección.
   </p>
 </section>
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-white/5 px-8 py-6 flex items-center justify-between">
-        <span className="font-mono text-white/20 text-xs">PyGuardian © 2026</span>
-      </footer>
     </main>
   );
 }

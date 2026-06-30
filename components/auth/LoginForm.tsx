@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import api from "@/lib/api";
-import {saveTokens} from "@/lib/auth";
-import axios, {isAxiosError} from "axios";
+import { saveTokens, getRol } from "@/lib/auth";
+import { isAxiosError } from "axios";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
@@ -18,11 +18,15 @@ export default function LoginForm() {
   const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-
+  // El backend NO manda el rol como campo aparte en /auth/login (ver Token
+  // schema). El rol viaja DENTRO del access_token (JWT) y se lee con
+  // getRol() después de guardarlo — ver create_access_token() en el backend.
   interface AuthResponse {
-  access_token: string;
-  refresh_token: string;
-}
+    access_token: string;
+    refresh_token: string;
+    token_type: string;
+  }
+
   // Cargar correo guardado en localStorage al montar el componente
   useEffect(() => {
     const savedCorreo = localStorage.getItem("rememberedEmail");
@@ -32,7 +36,6 @@ export default function LoginForm() {
     }
   }, []);
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -40,38 +43,39 @@ export default function LoginForm() {
 
     // Guardar o eliminar email según rememberMe
     if (rememberMe) {
-     localStorage.setItem("rememberedEmail", correo);
+      localStorage.setItem("rememberedEmail", correo);
     } else {
-     localStorage.removeItem("rememberedEmail");
+      localStorage.removeItem("rememberedEmail");
     }
 
     try {
-
-      // Aquí irá la lógica de autenticación
       const response = await api.post<AuthResponse>("/auth/login", {
-          correo: correo, 
-          password:password, 
+        correo: correo,
+        password: password,
       });
 
-      saveTokens(
-       response.data.access_token,
-       response.data.refresh_token 
-      );
+      saveTokens(response.data.access_token, response.data.refresh_token);
 
-      router.push("/dashboard");
+      // El rol se lee del JWT recién guardado, no de la respuesta del login
+      const rol = getRol();
 
+      if (rol === "superadmin") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err: unknown) {
       if (isAxiosError(err)) {
-       const detail = err.response?.data?.detail;
-       if(typeof detail==="string"){
-        setError(detail);
-       }else if(Array.isArray(detail)){
-        setError(detail[0]?.msg || "Error de validación");
-       }else{
-         setError("Credenciales incorrectas");
-       }
+        const detail = err.response?.data?.detail;
+        if (typeof detail === "string") {
+          setError(detail);
+        } else if (Array.isArray(detail)) {
+          setError(detail[0]?.msg || "Error de validación");
+        } else {
+          setError("Credenciales incorrectas");
+        }
       } else {
-       setError("Error inesperado");
+        setError("Error inesperado");
       }
     } finally {
       setLoading(false);
@@ -82,7 +86,7 @@ export default function LoginForm() {
     <form onSubmit={handleSubmit} className="w-full space-y-6">
       {/* Correo */}
       <div className="space-y-2">
-        <label htmlFor="email" className="block text-sm font-mono text-white/80">
+        <label htmlFor="correo" className="block text-sm font-mono text-white/80">
           Correo electrónico
         </label>
         <div className="relative">
@@ -120,11 +124,7 @@ export default function LoginForm() {
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/60 transition-colors"
           >
-            {showPassword ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
       </div>
@@ -136,26 +136,22 @@ export default function LoginForm() {
         </div>
       )}
 
-      {/* Remember & Forgot */}
+      {/* Remember */}
       <div className="flex items-center justify-between text-sm">
         <label className="flex items-center gap-2 cursor-pointer group">
-          <input 
-            type="checkbox" 
+          <input
+            type="checkbox"
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}
-            className="w-4 h-4 rounded bg-white/5 border border-white/10 accent-emerald-600" 
+            className="w-4 h-4 rounded bg-white/5 border border-white/10 accent-emerald-600"
           />
           <span className="font-mono text-white/60 group-hover:text-white/80 transition-colors">
             Recuérdame
           </span>
         </label>
-        {/* TODO: Implementar recuperación de contraseña */}
-        {/* <Link href="#" className="font-mono text-emerald-400 hover:text-emerald-300 transition-colors">
-          ¿Olvidó contraseña?
-        </Link> */}
       </div>
 
-      {/* Submit Button */}
+      {/* Submit */}
       <Button
         type="submit"
         disabled={loading}

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+// 1. Importa el componente Footer (ajusta la ruta según dónde lo guardaste)
+import { Footer } from "@/components/dashboard/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +34,17 @@ export default function RootLayout({
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      {/* Añadimos las clases de color de fondo y texto globales para que el footer y las páginas compartan el mismo diseño */}
+      <body className="min-h-full flex flex-col bg-[#0f172a] text-slate-200">
+        
+        {/* El div 'flex-1' envuelve las páginas y empuja al Footer hacia abajo */}
+        <div className="flex-1 flex flex-col">
+          {children}
+        </div>
+        
+        {/* El Footer global se renderiza en todas las rutas */}
+        <Footer />
+      </body>
     </html>
   );
 }

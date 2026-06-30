@@ -12,11 +12,13 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+// Importación del componente de Feedback
+import { FeedbackBubble } from '@/components/feedback/FeedbackBubble';
 
 export default function HistoryPage() {
   const { id } = useParams();
   const router = useRouter();
-  const proyectoId = Number(id);
+  const proyectoId = Number(id); // 👈 El ID ya está disponible aquí[cite: 5]
 
   const [historial, setHistorial] = useState<AnalysisHistoryResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -92,6 +94,9 @@ export default function HistoryPage() {
         <p className="text-center text-gray-400 text-sm">
           Se necesitan al menos 2 análisis para mostrar una tendencia.
         </p>
+
+        {/* 1. Primera actualización: Burbuja vinculada al ID del proyecto en estado condicional */}
+        <FeedbackBubble proyectoId={proyectoId} />
       </div>
     );
   }
@@ -215,6 +220,9 @@ export default function HistoryPage() {
           </div>
         ))}
       </div>
+
+      {/* 2. Segunda actualización: Burbuja vinculada al ID del proyecto en el renderizado principal */}
+      <FeedbackBubble proyectoId={proyectoId} />
     </div>
   );
 }

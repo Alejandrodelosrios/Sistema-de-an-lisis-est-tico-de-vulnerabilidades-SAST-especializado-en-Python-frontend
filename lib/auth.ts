@@ -56,3 +56,15 @@ export function isTokenExpired(token: string): boolean {
   const expTimestamp = decoded.exp as number;
   return Date.now() >= expTimestamp * 1000;
 }
+
+// ─── OBTENER ROL DEL USUARIO ──────────────────────────────────
+// El rol vive DENTRO del JWT (payload "rol"), tal como lo arma
+// create_access_token() en el backend. Nunca se guarda como un campo
+// aparte en localStorage: esta función es la única fuente de verdad.
+export function getRol(): "superadmin" | "estudiante" | null {
+  const token = getAccessToken();
+  if (!token) return null;
+  const decoded = decodeToken(token);
+  if (!decoded || !decoded.rol) return null;
+  return decoded.rol as "superadmin" | "estudiante";
+}
