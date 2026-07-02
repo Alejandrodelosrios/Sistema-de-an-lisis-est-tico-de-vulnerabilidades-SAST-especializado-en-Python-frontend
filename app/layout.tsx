@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-// 1. Importa el componente Footer (ajusta la ruta según dónde lo guardaste)
-import { Footer } from "@/components/dashboard/Footer";
+// 1. Importa el wrapper que oculta el Footer en rutas /admin
+import { ConditionalFooter } from "@/components/dashboard/ConditionalFooter";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,8 +42,8 @@ export default function RootLayout({
           {children}
         </div>
         
-        {/* El Footer global se renderiza en todas las rutas */}
-        <Footer />
+        {/* El Footer se oculta automáticamente en rutas /admin */}
+        <ConditionalFooter />
       </body>
     </html>
   );

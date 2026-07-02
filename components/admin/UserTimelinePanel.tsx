@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { X, Clock, Activity, FileCode } from 'lucide-react';
-// import { adminService } from '@/services/adminService';
+import { useEffect, useState, type ReactElement } from 'react';
+import { X, Clock, Activity, FileCode, LogIn, LogOut, UserPlus, FolderPlus, Trash2, Pencil, Download, MessageSquare, ClipboardList } from 'lucide-react';
+import { adminService } from '@/services/adminService';
+import type { AccionEnum, TimelineEvento } from '@/lib/types/admin';
 
 interface UserTimelinePanelProps {
   isOpen: boolean;
@@ -10,45 +11,68 @@ interface UserTimelinePanelProps {
   usuarioId: number | null;
 }
 
+const ACCION_LABEL: Record<AccionEnum, string> = {
+  registro: 'Registro',
+  login: 'Inicio de sesión',
+  logout: 'Cierre de sesión',
+  proyecto_creado: 'Proyecto creado',
+  proyecto_eliminado: 'Proyecto eliminado',
+  proyecto_actualizado: 'Proyecto actualizado',
+  archivo_subido: 'Archivo subido',
+  analisis_ejecutado: 'Análisis ejecutado',
+  reporte_descargado: 'Reporte descargado',
+  opinion_enviada: 'Opinión enviada',
+  encuesta_respondida: 'Encuesta respondida',
+};
+
+const ACCION_ICONO: Record<AccionEnum, ReactElement> = {
+  registro: <UserPlus className="w-4 h-4 text-violet-400" />,
+  login: <LogIn className="w-4 h-4 text-emerald-400" />,
+  logout: <LogOut className="w-4 h-4 text-slate-400" />,
+  proyecto_creado: <FolderPlus className="w-4 h-4 text-blue-400" />,
+  proyecto_eliminado: <Trash2 className="w-4 h-4 text-red-400" />,
+  proyecto_actualizado: <Pencil className="w-4 h-4 text-blue-400" />,
+  archivo_subido: <FileCode className="w-4 h-4 text-blue-400" />,
+  analisis_ejecutado: <Activity className="w-4 h-4 text-emerald-400" />,
+  reporte_descargado: <Download className="w-4 h-4 text-amber-400" />,
+  opinion_enviada: <MessageSquare className="w-4 h-4 text-pink-400" />,
+  encuesta_respondida: <ClipboardList className="w-4 h-4 text-cyan-400" />,
+};
+
+function formatearFecha(fecha: string): string {
+  return new Date(fecha).toLocaleString('es-BO', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 export const UserTimelinePanel = ({ isOpen, onClose, usuarioId }: UserTimelinePanelProps) => {
-  const [timeline, setTimeline] = useState<any[]>([]);
+  const [timeline, setTimeline] = useState<TimelineEvento[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Cargar datos cuando el panel se abre y hay un usuario seleccionado
   useEffect(() => {
     if (isOpen && usuarioId) {
-      cargarTimeline();
+      cargarTimeline(usuarioId);
     }
   }, [isOpen, usuarioId]);
 
-  const cargarTimeline = async () => {
+  const cargarTimeline = async (id: number) => {
     setLoading(true);
+    setError(null);
     try {
-      // Reemplaza esto con tu llamada real:
-      // const data = await adminService.getTimelineUsuario(usuarioId);
-      // setTimeline(data);
-      
-      // Datos simulados para que veas el diseño:
-      setTimeout(() => {
-        setTimeline([
-          { id: 1, accion: 'Análisis Ejecutado', detalle: 'Proyecto "Frontend React"', fecha: 'Hace 2 horas', tipo: 'analisis' },
-          { id: 2, accion: 'Archivo Subido', detalle: 'main.py (15KB)', fecha: 'Hace 3 horas', tipo: 'archivo' },
-          { id: 3, accion: 'Inicio de Sesión', detalle: 'IP: 192.168.1.1', fecha: 'Hace 1 día', tipo: 'sistema' },
-        ]);
-        setLoading(false);
-      }, 500);
-    } catch (error) {
-      console.error("Error cargando timeline", error);
+      const data = await adminService.getTimelineUsuario(id);
+      setTimeline(data.eventos);
+    } catch (err) {
+      console.error("Error cargando timeline", err);
+      setError("No se pudo cargar la bitácora de este usuario.");
+      setTimeline([]);
+    } finally {
       setLoading(false);
-    }
-  };
-
-  // Icono dinámico según el tipo de acción
-  const getIcon = (tipo: string) => {
-    switch (tipo) {
-      case 'analisis': return <Activity className="w-4 h-4 text-emerald-400" />;
-      case 'archivo': return <FileCode className="w-4 h-4 text-blue-400" />;
-      default: return <Clock className="w-4 h-4 text-slate-400" />;
     }
   };
 
@@ -88,20 +112,34 @@ export const UserTimelinePanel = ({ isOpen, onClose, usuarioId }: UserTimelinePa
             <div className="flex justify-center items-center h-32 text-slate-400 text-sm">
               Cargando actividad...
             </div>
+          ) : error ? (
+            <div className="flex justify-center items-center h-32 text-red-400 text-sm text-center px-4">
+              {error}
+            </div>
+          ) : timeline.length === 0 ? (
+            <div className="flex justify-center items-center h-32 text-slate-500 text-sm">
+              Este usuario todavía no tiene actividad registrada.
+            </div>
           ) : (
             <div className="relative border-l border-slate-700 ml-3 space-y-6">
-              {timeline.map((evento) => (
-                <div key={evento.id} className="relative pl-6">
+              {timeline.map((evento, i) => (
+                <div key={i} className="relative pl-6">
                   {/* Punto en la línea de tiempo */}
                   <span className="absolute -left-2.25 top-1 bg-slate-900 border border-slate-700 p-1 rounded-full">
-                    {getIcon(evento.tipo)}
+                    {ACCION_ICONO[evento.accion] ?? <Clock className="w-4 h-4 text-slate-400" />}
                   </span>
                   
                   {/* Información del evento */}
                   <div className="bg-slate-800/50 border border-slate-700/50 rounded-lg p-3">
-                    <p className="text-sm font-semibold text-slate-200">{evento.accion}</p>
-                    <p className="text-xs text-slate-400 mt-1">{evento.detalle}</p>
-                    <p className="text-[10px] text-slate-500 font-mono mt-2">{evento.fecha}</p>
+                    <p className="text-sm font-semibold text-slate-200">
+                      {ACCION_LABEL[evento.accion] ?? evento.accion}
+                    </p>
+                    {evento.detalle && (
+                      <p className="text-xs text-slate-400 mt-1">{evento.detalle}</p>
+                    )}
+                    <p className="text-[10px] text-slate-500 font-mono mt-2">
+                      {formatearFecha(evento.fecha)}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -112,3 +150,5 @@ export const UserTimelinePanel = ({ isOpen, onClose, usuarioId }: UserTimelinePa
     </>
   );
 };
+
+export default UserTimelinePanel;
